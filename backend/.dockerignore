@@ -1,0 +1,35 @@
+# Python bytecode/cache
+__pycache__/                
+*.py[cod]                   
+
+# Compiled extensions and extras
+*.pyo                       
+*.pyd                       
+
+# Virtual environments
+.venv/                      
+env/                        
+venv/                       
+
+# Environment files
+*.env                       
+
+# Docker files
+Dockerfile*                 
+
+# Git
+.git                        
+.gitignore                  
+
+# Logs and tooling cache
+*.log                       
+.pytest_cache/              
+
+# IDE / Editor configs
+.vscode/                    
+.idea/                      
+
+# Build / Dist artifacts
+build/                     
+dist/                      
+*.egg-info/             

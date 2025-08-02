@@ -1,0 +1,40 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  dockerHubRepo: sumit0058/joke-backend
+  dockerHubServiceConnection: DockerHub
+
+steps:
+# Checkout code
+- checkout: self
+
+# Select Python 3.11
+- task: UsePythonVersion@0
+  displayName: 'Use Python 3.11'
+  inputs:
+    versionSpec: '3.11'
+
+# Install dependencies
+- script: |
+    python -m pip install --upgrade pip
+    pip install --no-cache-dir -r requirements.txt
+  displayName: 'Install Python Dependencies'
+
+# Build & push Docker image
+- task: Docker@2
+  displayName: 'Build & Push Backend Image to DockerHub'
+  inputs:
+    containerRegistry: $(dockerHubServiceConnection)
+    repository: $(dockerHubRepo)
+    command: buildAndPush
+    Dockerfile: Dockerfile
+    buildContext: '.'
+    tags: |
+      latest
+      $(Build.BuildId)

@@ -1,0 +1,40 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  dockerHubRepo: sumit0058/joke-frontend
+  dockerHubServiceConnection: DockerHub
+
+steps:
+# Checkout code
+- checkout: self
+
+# Install Node.js
+- task: NodeTool@0
+  displayName: 'Install Node.js'
+  inputs:
+    versionSpec: '20.x'
+
+# Build the React frontend
+- script: |
+    npm ci
+    npm run build
+  displayName: 'Build Frontend'
+
+# Build & Push Docker image
+- task: Docker@2
+  displayName: 'Build & Push Frontend Image to DockerHub'
+  inputs:
+    containerRegistry: $(dockerHubServiceConnection)
+    repository: $(dockerHubRepo)
+    command: buildAndPush
+    Dockerfile: 'Dockerfile'
+    buildContext: '.'
+    tags: |
+      latest
+      $(Build.BuildId)

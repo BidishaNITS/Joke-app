@@ -1,0 +1,24 @@
+# Node modules and build output
+node_modules/
+build/
+
+# Environment files (local settings & secrets)
+.env
+.env.*.local
+
+# Docker and Git metadata
+.dockerignore
+Dockerfile*
+.git
+.gitignore
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+*.log
+
+# IDE / Editor settings and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

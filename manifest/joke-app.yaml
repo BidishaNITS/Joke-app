@@ -1,0 +1,133 @@
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: joke-app
+---
+# Backend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: joke-backend
+  namespace: joke-app
+  labels:
+    app: joke-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: joke-backend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: joke-backend
+    spec:
+      containers:
+      - name: backend
+        image: sumit0058/joke-backend:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /api/joke
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /api/joke
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+# Backend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: joke-backend
+  namespace: joke-app
+spec:
+  type: ClusterIP
+  selector:
+    app: joke-backend
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+---
+# Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: joke-frontend
+  namespace: joke-app
+  labels:
+    app: joke-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: joke-frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: joke-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: sumit0058/joke-frontend:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+# Frontend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: joke-frontend
+  namespace: joke-app
+spec:
+  type: ClusterIP
+  selector:
+    app: joke-frontend
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
